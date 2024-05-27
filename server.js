@@ -16,60 +16,61 @@ app.use(morgan("dev"));
 
 //
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+    res.send("Hello World!");
 });
 
 //
 app.get("/get-token", (req, res) => {
-  const API_KEY = process.env.VIDEOSDK_API_KEY;
-  const SECRET_KEY = process.env.VIDEOSDK_SECRET_KEY;
+    const API_KEY = '9dd3b903-2366-4397-9cd3-b66957032986';
+    const SECRET_KEY = 'f15353776a062960967704615e85164d84acf8be7456d2684cfa790253649979';
 
-  const options = { expiresIn: "10m", algorithm: "HS256" };
+    const options = { expiresIn: "10m", algorithm: "HS256" };
 
-  const payload = {
-    apikey: API_KEY,
-    permissions: ["allow_join", "allow_mod"], // also accepts "ask_join"
-  };
+    const payload = {
+        apikey: API_KEY,
+        permissions: ["allow_join", "allow_mod"], // also accepts "ask_join"
+    };
 
-  const token = jwt.sign(payload, SECRET_KEY, options);
-  res.json({ token });
+    const token = jwt.sign(payload, SECRET_KEY, options);
+    res.json({ token });
 });
 
 //
 app.post("/create-meeting/", (req, res) => {
-  const { token, region } = req.body;
-  const url = `${process.env.VIDEOSDK_API_ENDPOINT}/api/meetings`;
-  const options = {
-    method: "POST",
-    headers: { Authorization: token, "Content-Type": "application/json" },
-    body: JSON.stringify({ region }),
-  };
+    const { token, region } = req.body;
+    const url = `${process.env.VIDEOSDK_API_ENDPOINT}/api/meetings`;
+    const options = {
+        method: "POST",
+        headers: { Authorization: token, "Content-Type": "application/json" },
+        body: JSON.stringify({ region }),
+    };
 
-  fetch(url, options)
-    .then((response) => response.json())
-    .then((result) => res.json(result)) // result will contain meetingId
-    .catch((error) => console.error("error", error));
+    fetch(url, options)
+        .then((response) => response.json())
+        .then((result) => res.json(result)) // result will contain meetingId
+        .catch((error) => console.error("error", error));
 });
 
 //
 app.post("/validate-meeting/:meetingId", (req, res) => {
-  const token = req.body.token;
-  const meetingId = req.params.meetingId;
+    const token = req.body.token;
+    const meetingId = req.params.meetingId;
 
-  const url = `${process.env.VIDEOSDK_API_ENDPOINT}/api/meetings/${meetingId}`;
+    const url = `https://api.videosdk.live/api/meetings/${meetingId}`;
 
-  const options = {
-    method: "POST",
-    headers: { Authorization: token },
-  };
+    const options = {
+        method: "POST",
+        headers: { Authorization: token },
+    };
 
-  fetch(url, options)
-    .then((response) => response.json())
-    .then((result) => res.json(result)) // result will contain meetingId
-    .catch((error) => console.error("error", error));
+    fetch(url, options)
+        .then((response) => response.json())
+        .then((result) => res.json(result)) // result will contain meetingId
+        .catch((error) => console.error("error", error));
 });
 
 //
-app.listen(PORT, () => {
-  console.log(`API server listening at http://localhost:${PORT}`);
+const port = process.env.PORT || 9000
+app.listen(port, () => {
+    console.log(`API server listening at http://localhost:${port}`);
 });
