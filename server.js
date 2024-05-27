@@ -36,9 +36,10 @@ app.get("/get-token", (req, res) => {
 });
 
 //
-app.post("/create-meeting/", (req, res) => {
+app.post("/create-meeting", (req, res) => {
     const { token, region } = req.body;
-    const url = `${process.env.VIDEOSDK_API_ENDPOINT}/api/meetings`;
+    const url = `https://api.videosdk.live/api/meetings`; // Ensure this URL is absolute
+
     const options = {
         method: "POST",
         headers: { Authorization: token, "Content-Type": "application/json" },
@@ -48,8 +49,12 @@ app.post("/create-meeting/", (req, res) => {
     fetch(url, options)
         .then((response) => response.json())
         .then((result) => res.json(result)) // result will contain meetingId
-        .catch((error) => console.error("error", error));
+        .catch((error) => {
+            console.error("Error creating meeting:", error);
+            res.status(500).json({ error: "Error creating meeting" });
+        });
 });
+
 
 //
 app.post("/validate-meeting/:meetingId", (req, res) => {
